@@ -15,10 +15,20 @@ class BotConfig(BaseModel):
     api_key: str
 
 
+class DatabaseConfig(BaseModel):
+    """Конфигурация подключения к БД"""
+    database: str
+    user: str
+    password: str
+    host: str
+    port: int
+
+
 class Config(BaseModel):
     """Конфигурация приложения"""
     open_weather: OpenWeatherConfig
     tg_bot: BotConfig
+    db: DatabaseConfig
 
 
 def load_from_file(path: str) -> Config:
@@ -35,8 +45,10 @@ def load_config(values: dict[str, dict | str]) -> Config:
 
     open_weather = values['open_weather']
     tg_bot = values['tg_bot']
+    db = values['db']
 
     return Config(
         open_weather=OpenWeatherConfig(**open_weather),
         tg_bot=BotConfig(**tg_bot),
+        db=DatabaseConfig(**db)
     )
