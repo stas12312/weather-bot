@@ -6,7 +6,6 @@ from services.repo import Repository
 from middleware.db import DBMiddleware
 from .handlers.user import register_handlers
 
-
 def setup_dispatcher(config: Config, pool: asyncpg.Pool) -> Dispatcher:
     """
     Настройки клиента для работы с Telegram

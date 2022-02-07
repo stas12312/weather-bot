@@ -17,10 +17,13 @@ class DBMiddleware(BaseMiddleware):
             event: Message,
             data: dict[str, Any]
     ) -> Any:
+        # Берем соединение из пула и на основе
+        # него создаём репозиторий для взаимодействия с БД
         conn: asyncpg.Connection = await self.pool.acquire()
         repo = Repository(conn)
         data['repo'] = repo
         await handler(event, data)
-        
+
+        # Закрываем соединение
         del data['repo']
         await conn.close()
