@@ -16,7 +16,7 @@ class OpenWeatherMapClient:
             self,
             lat: float,
             lon: float,
-            exclude_parts: list[str],
+            exclude_parts: list[str] | None = None,
     ) -> models.OneCall:
         """
         Получение информации о погоде
@@ -25,6 +25,8 @@ class OpenWeatherMapClient:
         :param exclude_parts: Исключаемая информация
         :return: Данные о погоде
         """
+        if exclude_parts is None:
+            exclude_parts = []
         params = {
             'lat': lat,
             'lon': lon,

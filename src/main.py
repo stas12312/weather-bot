@@ -4,10 +4,12 @@ import logging
 import asyncpg
 from aiogram import Bot
 
-from config import load_from_file, Config
-from open_weather_map import OpenWeatherMapClient
 from bot import setup_dispatcher
-from services.repo import Repository
+from config import load_from_file, Config
+from logger import app_logger
+from open_weather_map import OpenWeatherMapClient
+
+logging.basicConfig(encoding='utf-8', level=logging.DEBUG)
 
 app_config = load_from_file('../config.ini')
 
@@ -21,13 +23,10 @@ async def create_pool(config: Config) -> asyncpg.Pool:
 
 
 async def main():
-    weather_client = OpenWeatherMapClient(
-        api_key=app_config.open_weather.api_key,
-    )
     pool = await create_pool(app_config)
     dp = setup_dispatcher(app_config, pool)
     bot = Bot(app_config.tg_bot.api_key)
-
+    app_logger.info('Запуск бота')
     await dp.start_polling(bot)
 
 

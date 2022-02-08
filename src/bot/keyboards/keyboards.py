@@ -11,3 +11,13 @@ def get_main_menu() -> ReplyKeyboardMarkup:
         resize_keyboard=True,
     )
     return keyboard
+
+
+def send_geo_keyboard() -> ReplyKeyboardMarkup:
+    keyboard = ReplyKeyboardMarkup(
+        keyboard=[
+            [buttons.SEND_LOCATION],
+        ],
+        resize_keyboard=True,
+    )
+    return keyboard

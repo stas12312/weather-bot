@@ -1,10 +1,13 @@
 import asyncpg
-from aiogram import Bot, Dispatcher, types, Router
-from aiogram.types import Message
+from aiogram import Dispatcher, Router
+
 from config import Config
-from services.repo import Repository
+from middleware.client import ClientMiddleware
 from middleware.db import DBMiddleware
-from .handlers.user import register_handlers
+from open_weather_map import OpenWeatherMapClient
+from .handlers.user import register_handlers as user_register
+from .handlers.weather import register_handlers as weather_register
+
 
 def setup_dispatcher(config: Config, pool: asyncpg.Pool) -> Dispatcher:
     """
@@ -13,10 +16,14 @@ def setup_dispatcher(config: Config, pool: asyncpg.Pool) -> Dispatcher:
     :param pool: Репозиторий
     :return:
     """
+    weather_client = OpenWeatherMapClient(api_key=config.open_weather.api_key)
 
     router = Router()
     router.message.middleware(DBMiddleware(pool))
-    register_handlers(router)
+    router.message.middleware(ClientMiddleware(weather_client))
+
+    user_register(router)
+    weather_register(router)
 
     dp = Dispatcher()
     dp.include_router(router)
