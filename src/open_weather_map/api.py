@@ -1,3 +1,4 @@
+import logging
 from typing import Any
 
 import aiohttp
@@ -39,6 +40,7 @@ class ApiService:
         url = self.make_url(api_service, api_method)
         params['appid'] = self.api_key
         params['units'] = 'metric'
+        params['lang'] = 'ru'
         result = await self.raw_request(url, params)
         return result
 
@@ -55,6 +57,7 @@ class ApiService:
         """
         response = await self.session.get(url, params=params)
         data = await response.json()
+        logging.info(response.url)
         return data
 
     @classmethod
@@ -69,5 +72,4 @@ class ApiService:
         :param api_method: API метод
         :return: URL для запроса
         """
-
         return f'{BASE_URL}/{api_service}/{api_method}'

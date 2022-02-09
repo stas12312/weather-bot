@@ -1,8 +1,10 @@
 """
 Работы с таблицей Пользователи
 """
+import json
+
 from asyncpg import Connection
-from .models import User
+from .models import User, WeatherWidget
 
 
 class Repository:
@@ -52,3 +54,62 @@ class Repository:
         )
 
         return User(**user)
+
+    async def create_widget(
+            self,
+            user_id: int,
+            name: str,
+            timezone_offset: int,
+            latitude: float,
+            longitude: float,
+            city_name: str,
+            settings: dict,
+            is_default: bool,
+    ) -> WeatherWidget:
+        """
+        Создание виджета
+        :param user_id: Идентификатор пользователя
+        :param name: Название виджета
+        :param timezone_offset: Временной сдвиг
+        :param latitude: Широта
+        :param longitude: Долгота
+        :param city_name: Название города
+        :param settings: Настройки виджета
+        :param is_default: Виджет по умолчанию
+        :return:
+        """
+
+        result = await self.conn.fetchrow(
+            """
+        INSERT INTO user_weather_widget 
+        (user_id, name, timezone_offset, latitude, longitude, city_name, settings, is_default)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING *
+        """,
+            user_id,
+            name,
+            timezone_offset,
+            latitude,
+            longitude,
+            city_name,
+            json.dumps(settings),
+            is_default,
+        )
+        return WeatherWidget(**result)
+
+    async def get_default_widget(
+            self,
+            user_id: int,
+    ) -> WeatherWidget:
+        """
+
+        :param user_id:
+        :return:
+        """
+        result = await self.conn.fetchrow(
+            """
+            SELECT * FROM user_weather_widget WHERE user_id=$1 AND is_default=true
+            """,
+            user_id
+        )
+        return WeatherWidget(**result)

@@ -5,8 +5,8 @@ CREATE TABLE tg_user
 (
     user_id    BIGINT PRIMARY KEY,
     first_name VARCHAR(255),
-    last_name  VARCHAR(255) DEFAULT '',
-    username   VARCHAR(255) DEFAULT '',
+    last_name  VARCHAR(255)             DEFAULT '',
+    username   VARCHAR(255)             DEFAULT '',
     created_at TIMESTAMP WITH TIME ZONE DEFAULT now()
 );
 
@@ -14,6 +14,7 @@ CREATE TABLE tg_user
 -- Таблица для погодного виджета
 CREATE TABLE user_weather_widget
 (
+    widget_id       BIGSERIAL PRIMARY KEY,
     user_id         BIGINT,
     name            VARCHAR(255),
     timezone_offset INT,
