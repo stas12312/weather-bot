@@ -26,6 +26,12 @@ async def create_widget(
     :param is_default:
     :return:
     """
+    # Удаляем старый виджет
+    await repo.delete_all_widgets(
+        user_id=user_id,
+    )
+
+    # Добавляем новый виджет
     await repo.create_widget(
         user_id=user_id,
         name=name,
@@ -53,3 +59,16 @@ async def get_default_widget(
         user_id=user_id
     )
     return widget_data
+
+
+async def user_has_widget(
+        repo: Repository,
+        user_id: int
+) -> bool:
+    """
+    Проверка наличия виджетов у пользователя
+    :param repo:
+    :param user_id:
+    :return:
+    """
+    return await repo.has_widget(user_id)

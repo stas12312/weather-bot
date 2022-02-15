@@ -18,10 +18,10 @@ async def start_add_widget(message: types.Message, state: FSMContext) -> None:
     :return:
     """
     await message.answer(
-        text='Введите название виджета',
-        reply_markup=types.ReplyKeyboardRemove(),
+        text='Укажите местоположение',
+        reply_markup=keyboards.send_geo_keyboard(),
     )
-    await state.set_state(AddWidget.name)
+    await state.set_state(AddWidget.location)
 
 
 async def set_widget_name(
@@ -38,7 +38,7 @@ async def set_widget_name(
     await state.update_data(name=name)
     await state.set_state(AddWidget.location)
     await message.answer(
-        text='Отправьте геопозицию для определения погоды',
+        text='Отправьте местоположение для определения погоды',
         reply_markup=keyboards.send_geo_keyboard(),
     )
 
@@ -57,11 +57,6 @@ async def create_widget(
     :param weather_client:
     :return:
     """
-    await message.answer(
-        text='Создание виджета',
-        reply_markup=keyboards.get_main_menu(),
-    )
-    data = await state.get_data()
     location = message.location
     weather_data = await weather_client.one_call(location.latitude, location.longitude)
 
@@ -69,7 +64,7 @@ async def create_widget(
     await weather.create_widget(
         repo=repo,
         user_id=message.from_user.id,
-        name=data['name'],
+        name='',
         timezone_offset=weather_data.timezone_offset,
         latitude=location.latitude,
         longitude=location.longitude,
@@ -82,6 +77,7 @@ async def create_widget(
 
     await message.answer(
         text=widget.as_text(),
+        reply_markup=keyboards.get_main_menu(True)
     )
     await state.clear()
 
@@ -94,6 +90,7 @@ async def show_default_widget(
     """
     Получение виджета по умолчанию
     :param message: Сообщений
+    :param weather_client: Клиент для получения погоды
     :param repo: Репозиторий
     :return:
     """
@@ -116,7 +113,6 @@ def register_handlers(router: Router) -> None:
     :return:
     """
 
-    router.message.register(start_add_widget, F.text == buttons.ADD_WIDGET.text)
+    router.message.register(start_add_widget, F.text == buttons.SETTING_WEATHER.text)
     router.message.register(show_default_widget, F.text == buttons.WEATHER.text)
-    router.message.register(set_widget_name, AddWidget.name)
     router.message.register(create_widget, AddWidget.location, F.content_type == 'location')

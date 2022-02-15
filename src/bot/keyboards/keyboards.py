@@ -1,13 +1,23 @@
 from aiogram.utils.keyboard import ReplyKeyboardMarkup, KeyboardButton
-from . import buttons
+from . import buttons as btn
 
 
-def get_main_menu() -> ReplyKeyboardMarkup:
+def get_main_menu(
+        is_set_location: bool
+) -> ReplyKeyboardMarkup:
+    """
+    Получение главного меню
+    :param is_set_location: Настроена локация
+    :return:
+    """
+    keyboard = []
+    if is_set_location:
+        keyboard.append([btn.WEATHER])
+
+    keyboard.append([btn.SETTING_WEATHER])
+
     keyboard = ReplyKeyboardMarkup(
-        keyboard=[
-            [buttons.WEATHER, buttons.MY_WIDGET],
-            [buttons.ADD_WIDGET],
-        ],
+        keyboard=keyboard,
         resize_keyboard=True,
     )
     return keyboard
@@ -16,7 +26,7 @@ def get_main_menu() -> ReplyKeyboardMarkup:
 def send_geo_keyboard() -> ReplyKeyboardMarkup:
     keyboard = ReplyKeyboardMarkup(
         keyboard=[
-            [buttons.SEND_LOCATION],
+            [btn.SEND_LOCATION],
         ],
         resize_keyboard=True,
     )

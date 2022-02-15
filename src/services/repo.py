@@ -113,3 +113,37 @@ class Repository:
             user_id
         )
         return WeatherWidget(**result)
+
+    async def delete_all_widgets(
+            self,
+            user_id: int,
+    ) -> None:
+        """
+        Удаление всех виджетов
+        :param user_id: Идентификатор пользователя
+        :return:
+        """
+        await self.conn.execute(
+            """
+            DELETE FROM user_weather_widget WHERE user_id = $1
+            """,
+            user_id,
+        )
+
+    async def has_widget(
+            self,
+            user_id: int,
+    ) -> bool:
+        """
+        Проверка наличия виджета у пользователя
+        :param user_id: Идентификатор пользователя
+        :return: Наличие виджетов у пользователя
+        """
+
+        result = await self.conn.fetchrow(
+            """
+        SELECT EXISTS(SELECT * FROM user_weather_widget WHERE user_id=$1)
+        """,
+            user_id
+        )
+        return result['exists']

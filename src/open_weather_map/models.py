@@ -31,6 +31,33 @@ class WeatherInfo(BaseModel):
     weather: list[Weather]  # Статус погоды
 
 
+class DailyTemp(BaseModel):
+    """
+    Температура на день
+    """
+    day: float
+    night: float
+    eve: float
+    morn: float
+
+
+class DailyFullTemp(DailyTemp):
+    """
+    Температура на день расширенная
+    """
+    min: float
+    max: float
+
+
+class DailyWeather(BaseModel):
+    """
+    Информация о погоде по дням
+    """
+    dt: int
+    temp: DailyFullTemp
+    feels_like: DailyTemp
+
+
 class CommonWeather(BaseModel):
     """
     Модель общей информации
@@ -46,3 +73,4 @@ class OneCall(CommonWeather):
     Модель для полной информации о погоде
     """
     current: WeatherInfo  # Текущая погод
+    daily: list[DailyWeather]
